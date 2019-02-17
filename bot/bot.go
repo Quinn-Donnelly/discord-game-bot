@@ -12,17 +12,13 @@ import (
 	"strings"
 	"syscall"
 
+	gamemaker "../game_maker"
 	discord "github.com/bwmarrin/discordgo"
 )
 
 // This is the color of the embeded border on messages
 var messageColor = 6413051
 var NameOfSecretsFile = "secrets.json"
-
-type GameRequest struct {
-	RequestedBy string
-	Game        string
-}
 
 type SecretInfo struct {
 	DiscordKey string
@@ -116,9 +112,9 @@ func addGame(message []string, requestedBy string) string {
 		return "No game specified"
 	}
 
-	games.PushBack(GameRequest{
-		RequestedBy: requestedBy,
-		Game:        message[0],
+	games.PushBack(gamemaker.GameRequest{
+		RequestedBy:   requestedBy,
+		RequestedGame: gamemaker.Game{Name: message[0]},
 	})
 	return message[0] + " has been added to selections"
 }
@@ -135,7 +131,7 @@ func removegame(message []string) string {
 		idxCount := 1
 		for e := games.Front(); e != nil; e = e.Next() {
 			if idxCount == number {
-				nameOfGameRemoved = e.Value.(GameRequest).Game
+				nameOfGameRemoved = e.Value.(gamemaker.GameRequest).RequestedGame.Name
 				games.Remove(e)
 			}
 
@@ -147,8 +143,8 @@ func removegame(message []string) string {
 
 		for e := games.Front(); e != nil; e = e.Next() {
 
-			if e.Value.(GameRequest).Game == nameOfGame {
-				nameOfGameRemoved = e.Value.(GameRequest).Game
+			if e.Value.(gamemaker.GameRequest).RequestedGame.Name == nameOfGame {
+				nameOfGameRemoved = e.Value.(gamemaker.GameRequest).RequestedGame.Name
 				games.Remove(e)
 				foundGame = true
 			}
@@ -169,8 +165,8 @@ func printCurrentList(session *discord.Session, channelId string) {
 
 	for e := games.Front(); e != nil; e = e.Next() {
 		fields = append(fields, &discord.MessageEmbedField{
-			Name:  strconv.Itoa(gameCount) + ". " + e.Value.(GameRequest).Game,
-			Value: "Requested by: " + e.Value.(GameRequest).RequestedBy,
+			Name:  strconv.Itoa(gameCount) + ". " + e.Value.(gamemaker.GameRequest).RequestedGame.Name,
+			Value: "Requested by: " + e.Value.(gamemaker.GameRequest).RequestedBy,
 		})
 
 		gameCount++
