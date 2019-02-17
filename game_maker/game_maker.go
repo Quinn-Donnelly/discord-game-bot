@@ -20,7 +20,6 @@ func (g *GameManager) AddGame(game Game) {
 	g.ListOfGames = append(g.ListOfGames, game)
 }
 
-// NOTE: Need to check if the idx + 1 goes out of bounds
 func (g *GameManager) RemoveGame(game Game) (removedGame Game) {
 	for idx, gameInList := range g.ListOfGames {
 		if strings.ToLower(game.Name) == gameInList.Name {
@@ -32,7 +31,6 @@ func (g *GameManager) RemoveGame(game Game) (removedGame Game) {
 	return removedGame
 }
 
-// NOTE: Need to check if the idx + 1 goes out of bounds
 func (g *GameManager) RemoveByName(game string) (removedGame Game) {
 	for idx, gameInList := range g.ListOfGames {
 		if strings.ToLower(game) == gameInList.Name {
@@ -44,7 +42,6 @@ func (g *GameManager) RemoveByName(game string) (removedGame Game) {
 	return removedGame
 }
 
-// NOTE: Need to check if the idx + 1 goes out of bounds
 func (g *GameManager) RemoveByIndex(game int) (removedGame Game) {
 	removedGame = g.ListOfGames[game]
 	g.ListOfGames = append(g.ListOfGames[:game], g.ListOfGames[game+1:]...)

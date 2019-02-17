@@ -12,7 +12,7 @@ import (
 	"strings"
 	"syscall"
 
-	gamemaker "../game_maker"
+	gamemaker "github.com/Quinn-Donnelly/discord-game-bot/game_maker"
 	discord "github.com/bwmarrin/discordgo"
 )
 
