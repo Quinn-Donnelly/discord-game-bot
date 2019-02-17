@@ -172,6 +172,13 @@ func printCurrentList(session *discord.Session, channelId string) {
 		gameCount++
 	}
 
+	if len(fields) == 0 {
+		fields = append(fields, &discord.MessageEmbedField{
+			Name:  "No games have been added to list",
+			Value: "To add a game use addgame command",
+		})
+	}
+
 	msg := discord.MessageEmbed{
 		Title:       "Games in Pool",
 		Description: "These are the games that have the potentail to be selected",
