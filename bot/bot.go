@@ -124,7 +124,42 @@ func addGame(message []string, requestedBy string) string {
 }
 
 func removegame(message []string) string {
-	return "Not Implemented"
+	number, err := strconv.Atoi(message[0])
+	var nameOfGameRemoved string
+
+	if err == nil {
+		if number > games.Len() || number < 1 {
+			return "Game #" + message[0] + " does not exist"
+		}
+
+		idxCount := 1
+		for e := games.Front(); e != nil; e = e.Next() {
+			if idxCount == number {
+				nameOfGameRemoved = e.Value.(GameRequest).Game
+				games.Remove(e)
+			}
+
+			idxCount++
+		}
+	} else {
+		foundGame := false
+		nameOfGame := strings.Join(message, " ")
+
+		for e := games.Front(); e != nil; e = e.Next() {
+
+			if e.Value.(GameRequest).Game == nameOfGame {
+				nameOfGameRemoved = e.Value.(GameRequest).Game
+				games.Remove(e)
+				foundGame = true
+			}
+		}
+
+		if !foundGame {
+			return "Game with name " + nameOfGame + " does not exist"
+		}
+	}
+
+	return nameOfGameRemoved + " has been removed"
 }
 
 func printCurrentList(session *discord.Session, channelId string) {
