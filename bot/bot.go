@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/list"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -24,7 +23,8 @@ type SecretInfo struct {
 	DiscordKey string
 }
 
-var games = list.New()
+// Manages a single session of the bots ability to make game selections
+var currentGameManager gamemaker.GameManager
 
 func main() {
 	secrets := readSecretsFile()
@@ -112,6 +112,7 @@ func addGame(message []string, requestedBy string) string {
 		return "No game specified"
 	}
 
+	currentGameManager.AddGame(gamemaker.Game{})
 	games.PushBack(gamemaker.GameRequest{
 		RequestedBy:   requestedBy,
 		RequestedGame: gamemaker.Game{Name: message[0]},

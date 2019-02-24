@@ -7,16 +7,16 @@ import (
 
 func TestAddGame(t *testing.T) {
 	gameMaker := GameManager{
-		ListOfGames: []Game{{Name: "league"}},
+		ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}, RequestedBy: "quinn"}},
 	}
 
-	gameMaker.AddGame(Game{
-		Name: "dota",
+	gameMaker.AddGame(GameRequest{
+		RequestedGame: Game{Name: "dota"},
 	})
 
 	found := false
 	for _, game := range gameMaker.ListOfGames {
-		if game.Name == "dota" {
+		if game.RequestedGame.Name == "dota" {
 			found = true
 			break
 		}
@@ -29,16 +29,16 @@ func TestAddGame(t *testing.T) {
 
 func TestAddGameDifferentCase(t *testing.T) {
 	gameMaker := GameManager{
-		ListOfGames: []Game{{Name: "league"}},
+		ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}, RequestedBy: "quinn"}},
 	}
 
-	gameMaker.AddGame(Game{
-		Name: "Dota",
+	gameMaker.AddGame(GameRequest{
+		RequestedGame: Game{Name: "Dota"},
 	})
 
 	found := false
 	for _, game := range gameMaker.ListOfGames {
-		if game.Name == "dota" {
+		if game.RequestedGame.Name == "dota" {
 			found = true
 			break
 		}
@@ -58,31 +58,31 @@ func TestRemoveGameByIndex(t *testing.T) {
 	}{
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}, RequestedBy: "quinn"}, GameRequest{RequestedGame: Game{Name: "dota"}, RequestedBy: "justin"}},
 			},
 			remove: 0,
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "dota"}, RequestedBy: "justin"}},
 			},
 			expectedReturn: Game{Name: "league"},
 		},
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			remove: 1,
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "league"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}},
 			},
 			expectedReturn: Game{Name: "dota"},
 		},
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}, {Name: "civ"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}, GameRequest{RequestedGame: Game{Name: "civ"}}},
 			},
 			remove: 1,
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "civ"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "civ"}}},
 			},
 			expectedReturn: Game{Name: "dota"},
 		},
@@ -112,31 +112,31 @@ func TestRemoveByName(t *testing.T) {
 	}{
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			remove: "League",
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			expectedReturn: Game{Name: "league"},
 		},
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			remove: "dota",
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "league"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}},
 			},
 			expectedReturn: Game{Name: "dota"},
 		},
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}, {Name: "civ"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}, GameRequest{RequestedGame: Game{Name: "civ"}}},
 			},
 			remove: "Dota",
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "civ"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "civ"}}},
 			},
 			expectedReturn: Game{Name: "dota"},
 		},
@@ -166,31 +166,31 @@ func TestRemoveGame(t *testing.T) {
 	}{
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			remove: Game{Name: "League"},
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			expectedReturn: Game{Name: "league"},
 		},
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}},
 			},
 			remove: Game{Name: "dota"},
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "league"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}},
 			},
 			expectedReturn: Game{Name: "dota"},
 		},
 		{
 			incoming: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "dota"}, {Name: "civ"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "dota"}}, GameRequest{RequestedGame: Game{Name: "civ"}}},
 			},
 			remove: Game{Name: "Dota"},
 			expected: GameManager{
-				ListOfGames: []Game{{Name: "league"}, {Name: "civ"}},
+				ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}, GameRequest{RequestedGame: Game{Name: "civ"}}},
 			},
 			expectedReturn: Game{Name: "dota"},
 		},
@@ -218,12 +218,12 @@ func TestSelectingGame(t *testing.T) {
 		ExpectedErr error
 	}{
 		{
-			Input:       GameManager{ListOfGames: []Game{Game{Name: "League"}}},
-			Expected:    Game{Name: "League"},
+			Input:       GameManager{ListOfGames: []GameRequest{GameRequest{RequestedGame: Game{Name: "league"}}}},
+			Expected:    Game{Name: "league"},
 			ExpectedErr: nil,
 		},
 		{
-			Input:       GameManager{ListOfGames: []Game{}},
+			Input:       GameManager{ListOfGames: []GameRequest{}},
 			Expected:    Game{},
 			ExpectedErr: errors.New("No games to choose from."),
 		},

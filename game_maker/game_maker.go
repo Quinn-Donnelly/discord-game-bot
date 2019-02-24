@@ -17,18 +17,18 @@ type GameRequest struct {
 }
 
 type GameManager struct {
-	ListOfGames []Game
+	ListOfGames []GameRequest
 }
 
-func (g *GameManager) AddGame(game Game) {
-	game.Name = strings.ToLower(game.Name)
+func (g *GameManager) AddGame(game GameRequest) {
+	game.RequestedGame.Name = strings.ToLower(game.RequestedGame.Name)
 	g.ListOfGames = append(g.ListOfGames, game)
 }
 
 func (g *GameManager) RemoveGame(game Game) (removedGame Game) {
 	for idx, gameInList := range g.ListOfGames {
-		if strings.ToLower(game.Name) == gameInList.Name {
-			removedGame = gameInList
+		if strings.ToLower(game.Name) == gameInList.RequestedGame.Name {
+			removedGame = gameInList.RequestedGame
 			g.ListOfGames = append(g.ListOfGames[:idx], g.ListOfGames[(idx+1):]...)
 		}
 	}
@@ -38,8 +38,8 @@ func (g *GameManager) RemoveGame(game Game) (removedGame Game) {
 
 func (g *GameManager) RemoveByName(game string) (removedGame Game) {
 	for idx, gameInList := range g.ListOfGames {
-		if strings.ToLower(game) == gameInList.Name {
-			removedGame = gameInList
+		if strings.ToLower(game) == gameInList.RequestedGame.Name {
+			removedGame = gameInList.RequestedGame
 			g.ListOfGames = append(g.ListOfGames[:idx], g.ListOfGames[(idx+1):]...)
 		}
 	}
@@ -48,7 +48,7 @@ func (g *GameManager) RemoveByName(game string) (removedGame Game) {
 }
 
 func (g *GameManager) RemoveByIndex(game int) (removedGame Game) {
-	removedGame = g.ListOfGames[game]
+	removedGame = g.ListOfGames[game].RequestedGame
 	g.ListOfGames = append(g.ListOfGames[:game], g.ListOfGames[game+1:]...)
 	return removedGame
 }
@@ -63,6 +63,6 @@ func (g *GameManager) SelectRandomGame() (selectedGame Game, err error) {
 	randomGenerator := rand.New(source)
 
 	index := randomGenerator.Intn(len(g.ListOfGames))
-	selectedGame = g.ListOfGames[index]
+	selectedGame = g.ListOfGames[index].RequestedGame
 	return selectedGame, nil
 }
