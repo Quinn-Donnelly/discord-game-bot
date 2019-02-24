@@ -1,6 +1,11 @@
 package game_maker
 
-import "strings"
+import (
+	"errors"
+	"math/rand"
+	"strings"
+	"time"
+)
 
 type Game struct {
 	Name string
@@ -46,4 +51,18 @@ func (g *GameManager) RemoveByIndex(game int) (removedGame Game) {
 	removedGame = g.ListOfGames[game]
 	g.ListOfGames = append(g.ListOfGames[:game], g.ListOfGames[game+1:]...)
 	return removedGame
+}
+
+func (g *GameManager) SelectRandomGame() (selectedGame Game, err error) {
+	if len(g.ListOfGames) < 1 {
+		return Game{}, errors.New("No games to choose from.")
+	}
+
+	seed := time.Now().UnixNano()
+	source := rand.NewSource(seed)
+	randomGenerator := rand.New(source)
+
+	index := randomGenerator.Intn(len(g.ListOfGames))
+	selectedGame = g.ListOfGames[index]
+	return selectedGame, nil
 }

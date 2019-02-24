@@ -1,6 +1,7 @@
 package game_maker
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -206,6 +207,37 @@ func TestRemoveGame(t *testing.T) {
 
 		if removed != testCase.expectedReturn {
 			t.Fatalf("Expected return of %v but received %v", testCase.expectedReturn, removed)
+		}
+	}
+}
+
+func TestSelectingGame(t *testing.T) {
+	testData := []struct {
+		Input       GameManager
+		Expected    Game
+		ExpectedErr error
+	}{
+		{
+			Input:       GameManager{ListOfGames: []Game{Game{Name: "League"}}},
+			Expected:    Game{Name: "League"},
+			ExpectedErr: nil,
+		},
+		{
+			Input:       GameManager{ListOfGames: []Game{}},
+			Expected:    Game{},
+			ExpectedErr: errors.New("No games to choose from."),
+		},
+	}
+
+	for _, test := range testData {
+		randomGame, err := test.Input.SelectRandomGame()
+
+		if test.ExpectedErr != nil && err == nil {
+			t.Fatalf("Expected error to be %v but got %v", test.ExpectedErr, err)
+		}
+
+		if randomGame != test.Expected {
+			t.Fatalf("Expected RandomGame to be %+v but got %+v", test.Expected, randomGame)
 		}
 	}
 }
