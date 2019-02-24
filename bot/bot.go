@@ -93,17 +93,24 @@ func messageCreated(session *discord.Session, messageCreateEvent *discord.Messag
 
 		command := message[1]
 		var response string
+		printListWhenDone := true
 		switch command {
 		case "addgame":
 			response = addGame(message[2:], messageCreateEvent.Author.Username)
 		case "removegame":
 			response = removegame(message[2:])
+		case "random":
+			response = pickRandom()
+			printListWhenDone = false
 		default:
 			response = "Unkown Command."
 		}
 
 		session.ChannelMessageSend(messageCreateEvent.ChannelID, response)
-		printCurrentList(session, messageCreateEvent.ChannelID)
+
+		if printListWhenDone {
+			printCurrentList(session, messageCreateEvent.ChannelID)
+		}
 	}
 }
 
@@ -112,11 +119,11 @@ func addGame(message []string, requestedBy string) string {
 		return "No game specified"
 	}
 
-	currentGameManager.AddGame(gamemaker.Game{})
-	games.PushBack(gamemaker.GameRequest{
+	currentGameManager.AddGame(gamemaker.GameRequest{
 		RequestedBy:   requestedBy,
 		RequestedGame: gamemaker.Game{Name: message[0]},
 	})
+
 	return message[0] + " has been added to selections"
 }
 
@@ -125,38 +132,37 @@ func removegame(message []string) string {
 	var nameOfGameRemoved string
 
 	if err == nil {
-		if number > games.Len() || number < 1 {
+		// Handle case where user is removing by index in list
+		index := number - 1
+		removedGame, err := currentGameManager.RemoveByIndex(index)
+
+		if err != nil {
 			return "Game #" + message[0] + " does not exist"
 		}
 
-		idxCount := 1
-		for e := games.Front(); e != nil; e = e.Next() {
-			if idxCount == number {
-				nameOfGameRemoved = e.Value.(gamemaker.GameRequest).RequestedGame.Name
-				games.Remove(e)
-			}
-
-			idxCount++
-		}
+		nameOfGameRemoved = removedGame.Name
 	} else {
-		foundGame := false
-		nameOfGame := strings.Join(message, " ")
+		nameOfGame := strings.ToLower(strings.Join(message, " "))
 
-		for e := games.Front(); e != nil; e = e.Next() {
+		removedGame := currentGameManager.RemoveByName(nameOfGame)
 
-			if e.Value.(gamemaker.GameRequest).RequestedGame.Name == nameOfGame {
-				nameOfGameRemoved = e.Value.(gamemaker.GameRequest).RequestedGame.Name
-				games.Remove(e)
-				foundGame = true
-			}
-		}
-
-		if !foundGame {
+		if removedGame.Name != nameOfGame {
 			return "Game with name " + nameOfGame + " does not exist"
 		}
+
+		nameOfGameRemoved = removedGame.Name
 	}
 
 	return nameOfGameRemoved + " has been removed"
+}
+
+func pickRandom() (message string) {
+	game, err := currentGameManager.SelectRandomGame()
+	if err != nil {
+		return err.Error()
+	}
+
+	return strings.Title(game.Name) + " has been selected"
 }
 
 func printCurrentList(session *discord.Session, channelId string) {
@@ -164,10 +170,10 @@ func printCurrentList(session *discord.Session, channelId string) {
 	var fields []*discord.MessageEmbedField
 	gameCount := 1
 
-	for e := games.Front(); e != nil; e = e.Next() {
+	for _, e := range currentGameManager.ListOfGames {
 		fields = append(fields, &discord.MessageEmbedField{
-			Name:  strconv.Itoa(gameCount) + ". " + e.Value.(gamemaker.GameRequest).RequestedGame.Name,
-			Value: "Requested by: " + e.Value.(gamemaker.GameRequest).RequestedBy,
+			Name:  strconv.Itoa(gameCount) + ". " + strings.Title(e.RequestedGame.Name),
+			Value: "Requested by: " + e.RequestedBy,
 		})
 
 		gameCount++

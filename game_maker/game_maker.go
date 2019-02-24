@@ -47,10 +47,15 @@ func (g *GameManager) RemoveByName(game string) (removedGame Game) {
 	return removedGame
 }
 
-func (g *GameManager) RemoveByIndex(game int) (removedGame Game) {
+// TODO: Update a test to check for the error condition that was added
+func (g *GameManager) RemoveByIndex(game int) (removedGame Game, err error) {
+	if game > len(g.ListOfGames) || game < 0 {
+		return Game{}, errors.New("Index out of bounds")
+	}
+
 	removedGame = g.ListOfGames[game].RequestedGame
 	g.ListOfGames = append(g.ListOfGames[:game], g.ListOfGames[game+1:]...)
-	return removedGame
+	return removedGame, nil
 }
 
 func (g *GameManager) SelectRandomGame() (selectedGame Game, err error) {

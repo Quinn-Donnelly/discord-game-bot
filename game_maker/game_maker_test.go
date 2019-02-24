@@ -89,7 +89,7 @@ func TestRemoveGameByIndex(t *testing.T) {
 	}
 
 	for _, testCase := range testData {
-		removed := testCase.incoming.RemoveByIndex(testCase.remove)
+		removed, _ := testCase.incoming.RemoveByIndex(testCase.remove)
 
 		for i, _ := range testCase.incoming.ListOfGames {
 			if testCase.incoming.ListOfGames[i] != testCase.expected.ListOfGames[i] {
